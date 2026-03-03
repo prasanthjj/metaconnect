@@ -134,12 +134,4 @@ app.listen(PORT, () => {
   console.log(`[startup] Proxy listening on port ${PORT}`);
   console.log('[startup] Routes: GET /health /databases /tables /cards, POST /query');
 });
-```
 
----
-
-After deploying, do two things:
-
-**1. Hit the URL:**
-```
-https://metaconnect.railway.app/databases
