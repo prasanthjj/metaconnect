@@ -76,9 +76,15 @@ async function mb(method, path, body) {
   return res.json();
 }
 
-app.get('/health', (_, res) => {
-  console.log('[route] GET /health');
-  res.json({ ok: true, time: new Date(), metabase: METABASE_URL });
+app.get('/health', async (_, res) => {
+  // Test if we can reach Metabase at all
+  try {
+    const r = await fetch(`${METABASE_URL}/api/health`);
+    const text = await r.text();
+    res.json({ ok: true, metabase_status: r.status, metabase_body: text.slice(0, 200) });
+  } catch(e) {
+    res.json({ ok: false, error: e.message, metabase_url: METABASE_URL });
+  }
 });
 
 app.get('/databases', async (_, res) => {
