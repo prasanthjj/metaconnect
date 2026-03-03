@@ -5,7 +5,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const METABASE_URL = process.env.METABASE_URL || 'https://reports.xindus.net';
+const METABASE_URL = process.env.METABASE_URL || 'https://meta.xindus.net';
 const MB_USERNAME  = process.env.MB_USERNAME  || 'saurabh@xindus.net';
 const MB_PASSWORD  = process.env.MB_PASSWORD  || 'gtEynUQf9T8sMH';
 
