@@ -21,6 +21,7 @@ async function getToken() {
   const data = await res.json();
   sessionToken = data.id;
   tokenExpiry = Date.now() + 55 * 60 * 1000;
+  console.log('[proxy] Token obtained');
   return sessionToken;
 }
 
@@ -31,21 +32,36 @@ async function mb(method, path, body) {
     headers: { 'Content-Type': 'application/json', 'X-Metabase-Session': token },
     body: body ? JSON.stringify(body) : undefined,
   });
-  if (!res.ok) throw new Error(`${path} -> ${res.status}`);
+  if (!res.ok) throw new Error(`${path} -> ${res.status}: ${await res.text()}`);
   return res.json();
 }
 
-app.get('/health',    async (_, res) => res.json({ ok: true }));
-app.get('/databases', async (_, res) => { try { res.json(await mb('GET', '/api/database')); } catch(e){ res.status(500).json({error:e.message}); }});
-app.get('/tables',    async (_, res) => { try { res.json(await mb('GET', '/api/table')); }    catch(e){ res.status(500).json({error:e.message}); }});
+app.get('/health',    async (_, res) => res.json({ ok: true, time: new Date() }));
+
+app.get('/databases', async (_, res) => {
+  try { res.json(await mb('GET', '/api/database')); }
+  catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+app.get('/tables', async (_, res) => {
+  try { res.json(await mb('GET', '/api/table')); }
+  catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+app.get('/cards', async (_, res) => {
+  try { res.json(await mb('GET', '/api/card')); }
+  catch(e) { res.status(500).json({ error: e.message }); }
+});
 
 app.post('/query', async (req, res) => {
   try {
     const { database, sql } = req.body;
+    if (!database || !sql) return res.status(400).json({ error: 'database and sql required' });
     res.json(await mb('POST', '/api/dataset', {
       database, type: 'native', native: { query: sql }
     }));
-  } catch(e){ res.status(500).json({error:e.message}); }
+  } catch(e) { res.status(500).json({ error: e.message }); }
 });
 
-app.listen(process.env.PORT || 3001, () => console.log('Proxy running'));
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => console.log(`[proxy] Running on port ${PORT}`));
