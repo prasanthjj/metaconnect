@@ -20,8 +20,8 @@ app.options('*', (req, res) => {
 app.use(express.json());
 
 const METABASE_URL = process.env.METABASE_URL || 'http://3.111.136.12:3000';
-const MB_USERNAME  = process.env.MB_USERNAME  || 'saurabh@xindus.net';
-const MB_PASSWORD  = process.env.MB_PASSWORD  || 'gtEynUQf9T8sMH';
+const MB_USERNAME  = process.env.MB_USERNAME;
+const MB_PASSWORD  = process.env.MB_PASSWORD;
 
 console.log('[startup] METABASE_URL:', METABASE_URL);
 console.log('[startup] MB_USERNAME:', MB_USERNAME);
